@@ -8,6 +8,61 @@
 5. If your frames reach the server it will send ACK signal to client
 6. Stop the Program
 ## PROGRAM
+### SERVER SIDE
+```
+import socket
+s=socket.socket()
+s.bind(('localhost',9999))
+s.listen(1)
+print("server listening...")
+conn,addr=s.accept()
+print(f"connected to {addr}")
+
+while True:
+    frames= conn.recv(1024).decode()
+    if not frames:
+        break
+    
+    print(f"received frames: {frames}")
+    ack_message =f"ACK for frames: {frames}"
+    conn.send(ack_message.encode())
+    
+conn.close()
+s.close()
+ ```
+
+### CLIENT SIDE
+```
+import socket
+c=socket.socket()
+c.connect(('localhost',9999))
+
+size = int (input("enter number of frames to send:"))
+l= list(range(size))
+print("total frames to send:",len(l))
+s= int(input("enter window size:"))
+
+i=0
+while True:
+    while i < len(l):
+        st=i+s
+        frames_to_send=l[i:st]
+        print(f"sending frames: {frames_to_send}")
+        c.send(str(frames_to_send).encode())
+       
+        ack =c.recv(1024).decode()
+        if ack:
+            print(f"acknowledge received: {ack}")
+            i+=s
+    break
+c.close()
+```
+
 ## OUPUT
+### SERVER SIDE
+<img width="1920" height="1080" alt="server_side_exp2" src="https://github.com/user-attachments/assets/2c4bbca8-88cb-4bda-8243-79bf47f6a504" />
+### CLIENT SIDE
+<img width="1920" height="1080" alt="client_side_exp2" src="https://github.com/user-attachments/assets/7a8a600b-c0af-4162-9b7a-0908e6e81a31" />
+
 ## RESULT
 Thus, python program to perform stop and wait protocol was successfully executed
